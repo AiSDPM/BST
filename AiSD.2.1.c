@@ -24,7 +24,7 @@ struct tree *insert(struct tree *root, int x) { //budowa drzewa
 	return(root);
 }
 
-struct tree *search(struct tree *root, int x) { //przeszukiwanie, trzeba poprawiæ
+struct tree *search(struct tree *root, int x) { //przeszukiwanie, trzeba poprawiÃ¦
 	struct tree *ptr;
 	ptr=root;
 	while(ptr) {
@@ -46,7 +46,7 @@ int main(void){
 	BTS->info = tab1[0];
 	BTS->left = NULL;
 	BTS->right = NULL;
-	BTS->prev = NULL;
+	BTS->prev = root;
 		
 	for(i = 0; i < 20, i++){
 		BST= new struct tree;
