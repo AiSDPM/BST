@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <chrono>
+
 struct tree { //inicjacja drzewa
 	int info;
 	struct tree *left;
