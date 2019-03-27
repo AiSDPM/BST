@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <chrono>
 
 struct tree { //inicjacja drzewa
 	int info;
