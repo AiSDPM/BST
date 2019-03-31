@@ -1,6 +1,11 @@
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <chrono>
+#include <time.h>
+#include <fstream>
+
+using namespace std;
 
 struct tree { //inicjacja drzewa
 	int info;
@@ -52,20 +57,46 @@ void postorder(struct tree *root) {
 
 
 int main(void){
+
+    time_t start, koniec;
+    double roznica;
+    fstream drzewo, drzewosearch, drzewodelete;
+
 	int tab1[] = {10, 4, 3, 5, 9, 7, 2, 8, 6, 0, 11, 1, 14, 17, 13, 15, 19, 12, 18, 16};
-	int i,x;
+	int i,x, petla, y = 20000000;
+
 	struct tree *a= NULL;
 	struct tree *BST = NULL;
 
-	for(i = 0; i < 20; i++){ //budowa drzewa
-		BST = insert(BST,tab1[i]);
-	}
+    drzewo.open("wynikidrzewo.txt", ios::out | ios::app); //dopisywanie wyników, tworzy nowy plik jesli brak
+    drzewosearch.open("searchdrzewo.txt", ios::out | ios::app);
+  //  drzewodelete.open("deletedrzewo.txt", ios::out | ios::app);
 
-	for(i = 0; i < 20; i++){ // test search
-		a = search(BST,tab1[i]);
-		x= a->info;
-		printf("%d \n", x);
-	}
+    time( & start );
+    for (petla = 0; petla < y; petla++){
+        for(i = 0; i < 20; i++){ //budowa drzewa
+            BST = insert(BST,tab1[i]);
+        }
+    }
+    time( & koniec );
+    roznica = difftime( koniec, start );
+    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
+    drzewo << roznica << "     " << roznica/y << " y to " << y << endl;
+    drzewo.close();
+
+    time( & start );
+    for (petla = 0; petla < y; petla++){
+        for(i = 0; i < 20; i++){ // test search
+            a = search(BST,tab1[i]);
+            x= a->info;
+		//printf("%d \n", x);
+        }
+    }
+	time( & koniec );
+    roznica = difftime( koniec, start );
+    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
+    drzewosearch << roznica << "     " << roznica/y << " y to " << y << endl;
+    drzewosearch.close();
 
     postorder(BST); // usuwanie
 	return 0;
