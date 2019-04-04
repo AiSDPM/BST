@@ -45,60 +45,63 @@ struct tree *insert(struct tree *root, int x) { //budowa drzewa
  }
 
 
-void postorder(struct tree *root) {
+void deleteTree(struct tree *root) {
 	if(root != NULL) {
-		postorder(root->left);
-		postorder(root->right);
-		printf(" %d",root->info);
+		deleteTree(root->left);
+		deleteTree(root->right);
+		//printf(" %d",root->info);
 		free(root);
 	}
 	return;
 }
 
 
-int main(void){
+int main(){
 
-    time_t start, koniec;
-    double roznica;
-    fstream drzewo, drzewosearch, drzewodelete;
-
-	int tab1[] = {10, 4, 3, 5, 9, 7, 2, 8, 6, 0, 11, 1, 14, 17, 13, 15, 19, 12, 18, 16};
-	int i,x, petla, y = 20000000;
-
-	struct tree *a= NULL;
+    fstream drzewo, drzewosearch, drzewodelete,plik_in;
+	int i,x;
 	struct tree *BST = NULL;
+    drzewo.open("TreeInsert.txt", ios::out | ios::app); 
+    drzewosearch.open("TreeSearch.txt", ios::out | ios::app);
+    drzewodelete.open("TreeDelete.txt", ios::out | ios::app);
 
-    drzewo.open("wynikidrzewo.txt", ios::out | ios::app); //dopisywanie wyników, tworzy nowy plik jesli brak
-    drzewosearch.open("searchdrzewo.txt", ios::out | ios::app);
-  //  drzewodelete.open("deletedrzewo.txt", ios::out | ios::app);
+    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
 
-    time( & start );
-    for (petla = 0; petla < y; petla++){
-        for(i = 0; i < 20; i++){ //budowa drzewa
-            BST = insert(BST,tab1[i]);
-        }
+    for(int j = 1; j<16;j++){
+
+    	BST = NULL;
+    	cout<< j << endl;
+	    plik_in.open("dane.txt", ios::in);
+    	start = std::chrono::high_resolution_clock::now();
+    	for(i = 0; i < 20000*j; i++){
+                 plik_in>>x;
+            	 BST = insert(BST,x);
+   	 }
+   	 end = std::chrono::high_resolution_clock::now();
+    	std::chrono::duration<double> elapsed_seconds = end-start;
+    	drzewo << "Tworzenie: " <<elapsed_seconds.count() << endl;
+    	plik_in.close();
+	    
+    	plik_in.open("C:\\Users\\Michal\\PycharmProjects\\untitled2\\venv\\Include\\dane.txt", ios::in);
+    	start = std::chrono::high_resolution_clock::now();
+    	for(i = 0; i < 20000*j; i++){
+              	  plik_in>>x;// test search
+          	  a = search(BST,x);
+    	}
+   	end = std::chrono::high_resolution_clock::now();
+    	plik_in.close();
+    	elapsed_seconds = end-start;
+    	drzewosearch << "Przeszukanie: " <<elapsed_seconds.count() << endl;
+
+    	start = std::chrono::high_resolution_clock::now();
+    	deleteTree(BST);
+    	end = std::chrono::high_resolution_clock::now();
+    	elapsed_seconds = end-start;
+    	drzewodelete << "Usuniecie: " <<elapsed_seconds.count() << endl;
     }
-    time( & koniec );
-    roznica = difftime( koniec, start );
-    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
-    drzewo << roznica << "     " << roznica/y << " y to " << y << endl;
     drzewo.close();
-
-    time( & start );
-    for (petla = 0; petla < y; petla++){
-        for(i = 0; i < 20; i++){ // test search
-            a = search(BST,tab1[i]);
-            x= a->info;
-		//printf("%d \n", x);
-        }
-    }
-	time( & koniec );
-    roznica = difftime( koniec, start );
-    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
-    drzewosearch << roznica << "     " << roznica/y << " y to " << y << endl;
     drzewosearch.close();
-
-    postorder(BST); // usuwanie
-	return 0;
+    drzewodelete.close();
+    return 0;
 }
 
