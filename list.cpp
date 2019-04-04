@@ -2,17 +2,16 @@
 #include <cstdlib>
 #include <iostream>
 #include <chrono>
-#include <time.h>
 #include <fstream>
 
 using namespace std;
 
-struct list{ // stryktura
+struct list{ 
 	int key;
 	struct list *next;
 };
 
-struct list *insert(struct list *start, int x) { //budowa listy
+struct list *insert(struct list *start, int x) { 
 
 	struct list *newList = (struct list*)malloc(sizeof(struct list));
     newList->key = x;
@@ -48,14 +47,14 @@ void deleteList(struct list *start) {
     while(currentList != NULL)
 	{
 	    start = currentList -> next;
-	   // printf(" %d",currentList->key);
+	    //printf(" %d",currentList->key);
 	    free(currentList);
 	    currentList = start;
 	}
 
 }
 
-struct list *search(struct list *start, int x) { //budowa drzewa
+struct list *search(struct list *start, int x) { 
 
 	struct list *currentList = start;
 	while(currentList !=NULL && currentList->key != x)
@@ -66,54 +65,53 @@ struct list *search(struct list *start, int x) { //budowa drzewa
 }
 
 
-int main (void)
+int main ()
 {
-    time_t start, koniec;
     double roznica;
-    int tab1[] = {10, 4, 3, 5, 9, 7, 2, 8, 6, 0, 11, 1, 14, 17, 13, 15, 19, 12, 18, 16};
-	int i,x, petla, y=3000;
-	fstream plik, pliksearch,plikdelete;
+    int i,x;
+    fstream plik, pliksearch,plikdelete,plik_in;
+    struct list *Lista = NULL;
+    struct list *a = NULL;
+    plik.open("ListaInsert.txt", ios::out | ios::app); //dopisywanie wynikow, tworzy nowy plik jesli brak
+    pliksearch.open("ListaSearch.txt", ios::out | ios::app);
+    plikdelete.open("ListaDelete.txt", ios::out | ios::app);
+    std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
+	
+    for(int j =1;j<16;j++){
+    	Lista = NULL;
+    	cout<< j<<endl;
+    	plik_in.open("dane.txt", ios::in);
+   	start = std::chrono::high_resolution_clock::now();
+    	for(i = 0; i < 20000*j; i++){ //budowa listy
+            	plik_in >> x;
+            	Lista = insert(Lista,x);
+    	}
+    	end = std::chrono::high_resolution_clock::now();
+    	std::chrono::duration<double> elapsed_seconds = end-start;
+    	plik << "Tworzenie: " <<elapsed_seconds.count() << endl;
+    	plik_in.close();
 
-	struct list *Lista = NULL, Lista2;
-	struct list *a =NULL;
+    	plik_in.open("C:\\Users\\Michal\\PycharmProjects\\untitled2\\venv\\Include\\dane.txt", ios::in);
+    	start = std::chrono::high_resolution_clock::now();
+    	for(i = 0; i < 10000*j; i++){ // test search
+           	 plik_in >> x;
+            	 a = search(Lista,x);
+    	}
+    	end = std::chrono::high_resolution_clock::now();
+    	plik_in.close();
+    	elapsed_seconds = end-start;
+    	pliksearch << "Przeszukanie: " <<elapsed_seconds.count() << endl;
 
-    plik.open("wynikilista.txt", ios::out | ios::app); //dopisywanie wyników, tworzy nowy plik jesli brak
-    pliksearch.open("searchlista.txt", ios::out | ios::app);
-    plikdelete.open("deletelista.txt", ios::out | ios::app);
+    	start = std::chrono::high_resolution_clock::now();
+    	deleteList(Lista);
+    	end = std::chrono::high_resolution_clock::now();
+    	elapsed_seconds = end-start;
+    	plikdelete << "Usuniecie: " <<elapsed_seconds.count() << endl;
 
-    time( & start );
-    for (petla = 0; petla < y; petla++){
-	for(i = 0; i < 20; i++){ //budowa listy
-            Lista = insert(Lista,tab1[i]);
-        }
-	}
-	time( & koniec );
-    roznica = difftime( koniec, start );
-    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
-    plik << roznica << "     " << roznica/y << " y to " << y << endl;
+    }
     plik.close();
-
-    time( & start );
-    for (petla = 0; petla < y; petla++){
-        for(i = 0; i < 20; i++){ // test search
-            a = search(Lista,tab1[i]);
-            x= a->key;
-            //printf("%d \n", x);
-        }
-	}
-	time( & koniec );
-    roznica = difftime( koniec, start );
-    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
-    pliksearch << roznica << "     " << roznica/y << " y to " << y << endl;
     pliksearch.close();
-
-	time( & start );
-    deleteList(Lista);
-    time( & koniec );
-    roznica = difftime( koniec, start );
-    cout << "Obliczenia zajely Ci: " << roznica/y << " sekund\n";
-    plikdelete << roznica << "     " << roznica/y << " y to " << y << endl;
     plikdelete.close();
+    return 0;
 
-	return 0;
 }
