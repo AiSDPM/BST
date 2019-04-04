@@ -1,8 +1,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <algorithm>
-#include <chrono>
+#include <fstream>
+#include <iostream>
 
+using namespace std;
 struct tree { //inicjacja drzewa
 	int info;
 	struct tree *left;
@@ -31,68 +33,79 @@ struct tree* insert(struct tree *root, int x) { //budowa drzewa
 	}
 	return(root);
 }
-
 void deleteTree(struct tree *root) {
 	if(root != NULL) {
 		deleteTree(root->left);
 		deleteTree(root->right);
-		printf(" %d",root->info);
+		//printf(" %d",root->info);
 		free(root);
 	}
 	return;
 }
 
 
-int height (struct tree *root, int h,int max)
+int height (struct tree *root, int h,int maks)
 {
 	if(root != NULL) {
 		h++;
-		max = height(root->left, h, max);
-		max = height(root->right, h, max);
+		maks = height(root->left, h, maks);
+		maks = height(root->right, h, maks);
 		h--;
 	}
 	else
 	{
 
-		if (h>max)
-		  max=h;
+		if (h>maks)
+		  {maks=h;
+		  }
 	}
-	return (max);
+	return (maks);
 }
 
-struct tree *makeAVL(struct tree *root, struct tree *node,int l, int p, int *tab) {
-    if (l>p)
-        return root;
-    int mid = (l+p)/2;
-    node = newElement(tab[mid]);
-    node->left = makeAVL(root, node, l, mid-1,tab);
-	node->right = makeAVL(root,node, mid+1, p ,tab);
-
+struct tree *makeAVL(int tab[], int start, int end) {
+    if (start > end)
+        return NULL;
+    int mid = (start + end)/2;
+    struct tree *root = newElement(tab[mid]);
+    root->left = makeAVL(tab, start, mid - 1);
+    root->right = makeAVL(tab, mid + 1, end);
+    return root;
 }
 
 
 
-int main(void){
-	int tab1[] = {10, 4, 3, 5, 9, 7, 2, 8, 6, 0, 11, 1, 14, 17, 13, 15, 19, 12, 18, 16};
-	int i,x;
-	struct tree *BST = NULL;
-
-	for(i = 0; i < 20; i++){ //budowa drzewa
-		BST = insert(BST,tab1[i]);
-	}
-
-	x= height(BST,0,0);
-    deleteTree(BST); // usuwanie
-    free(BST);
-
+int main(){
+    
+    fstream inBST,outAVL,outBST;
+    outAVL.open("AVL.txt", ios::out | ios::app); //dopisywanie wynik�w, tworzy nowy plik jesli brak
+    outBST.open("BST.txt", ios::out | ios::app);
+    int i,x;
+    struct tree *BST = NULL;
     struct tree *AVL = NULL;
-    int len = sizeof(tab1)/sizeof(tab1[0]);
-    std::sort(tab1, tab1+ len);
+    int tab [1500000];
+    for(int j = 1; j<16;j++){
+        cout<< j <<endl;
+        BST = NULL;
+        inBST.open("dane.txt", ios::in);
+        for(i = 0; i < 100000*j; i++){
+            inBST>>x;
+            BST = insert(BST,x);
+            tab[i]=x;
+            }
+        inBST.close();
+        x= height(BST,0,0);
+        outBST << "Wysokosc BST: " << x <<endl;
 
-    AVL = makeAVL(AVL,AVL, 0, len-1, tab1);
-    x= height(AVL,0,0);
-	deleteTree(AVL); // usuwanie
-    free(AVL);
+        AVL = NULL;
+        std::sort(tab, tab + j*100000);
+        AVL = makeAVL(tab,0, j*100000-1);
+        x= height(AVL,0,0);
+        outAVL << "Wysokosc AVL: " << x <<endl;
+        deleteTree(AVL); // usuwanie
+        deleteTree(BST); // usuwanie
 
+	}
+	outAVL.close();
+	outBST.close();
 	return 0;
-}
+} 
