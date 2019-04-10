@@ -37,12 +37,20 @@ void deleteTree(struct tree *root) {
 	if(root != NULL) {
 		deleteTree(root->left);
 		deleteTree(root->right);
-		//printf(" %d",root->info);
+		// cout<< root->info<< "  ";
 		free(root);
 	}
 	return;
 }
-
+void inorder(struct tree *root, int *tab, int *i) {
+	if(root != NULL) {
+		inorder(root->left,tab,i);
+		tab[*i]=root->info;
+		*i = *i+1;
+		inorder(root->right,tab,i);
+	}
+	return;
+}
 
 int height (struct tree *root, int h,int maks)
 {
@@ -75,9 +83,9 @@ struct tree *makeAVL(int tab[], int start, int end) {
 
 
 int main(){
-    
+
     fstream inBST,outAVL,outBST;
-    outAVL.open("AVL.txt", ios::out | ios::app); //dopisywanie wynik�w, tworzy nowy plik jesli brak
+    outAVL.open("AVL.txt", ios::out | ios::app); //dopisywanie wynikow, tworzy nowy plik jesli brak
     outBST.open("BST.txt", ios::out | ios::app);
     int i,x;
     struct tree *BST = NULL;
@@ -95,17 +103,19 @@ int main(){
         inBST.close();
         x= height(BST,0,0);
         outBST << "Wysokosc BST: " << x <<endl;
-
+        x=0;
         AVL = NULL;
-        std::sort(tab, tab + j*100000);
+        inorder(BST,tab,&x);
         AVL = makeAVL(tab,0, j*100000-1);
         x= height(AVL,0,0);
-        outAVL << "Wysokosc AVL: " << x <<endl;
-        deleteTree(AVL); // usuwanie
-        deleteTree(BST); // usuwanie
-
+        outAVL << "Wysokosc AVL: " << x <<endl;// usuwanie
+        //cout<< "BST:" <<endl;
+        deleteTree(BST);
+        //cout<< "AVL:" <<endl;
+        deleteTree(AVL);// usuwanie
+        //cout<< endl<<endl;
 	}
 	outAVL.close();
 	outBST.close();
 	return 0;
-} 
+}
