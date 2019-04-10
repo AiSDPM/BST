@@ -111,7 +111,7 @@ int main(){
         outAVL << "Wysokosc AVL: " << x <<endl;// usuwanie
         //cout<< "BST:" <<endl;
         deleteTree(BST);
-        //cout<< "AVL:" <<endl;
+        //cout<< endl <<"AVL:" <<endl;
         deleteTree(AVL);// usuwanie
         //cout<< endl<<endl;
 	}
